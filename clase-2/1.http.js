@@ -9,6 +9,16 @@ const processRequest = (req, res) => {
   if (req.url === '/') {
     res.statusCode = 200
     res.end('Bienvenido a la página principal')
+  }else if (req.url === '/imagen.png') {
+    fs.readFile('./placa.png', (err, data) => {
+      if (err) {
+        res.statusCode = 404
+        res.end('No se encontró la imagen')
+      } else {
+        res.setHeader('Content-Type', 'image/png')
+        res.end(data)
+      }
+    })
   }else if (req.url === '/contacto') {
     res.statusCode = 200
     res.end('Contacto')
