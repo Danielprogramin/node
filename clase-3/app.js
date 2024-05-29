@@ -1,8 +1,11 @@
 const esxpress = require('express')
-
+const crypto = require('node:crypto')
 const movies = require('./movies.json')
 
 const app = esxpress()
+app.use(express.json())
+app.disable('x-powered-by')
+
 
 app.get('/', (req, res) => {
     res.json({ message: 'Hello'})
@@ -28,7 +31,34 @@ app.get('/movies/:id', (req, res) => {
 })
 
 app.post('/movies', (req, res) => {
-    
+    const {
+    title,
+    genre,
+    year,
+    director,
+    duration,
+    rate,
+    poster,
+    } = req.body
+
+    const newMovie = {
+
+        id: crypto.randomUUID(), // uuid v4
+        title,
+        genre,
+        year,
+        director,
+        duration,
+        rate: rate ?? 0,
+        poster,
+    }
+
+    //esto no es REST, porque estamos guardadrdo
+    //el estadoo de la aplicacion en memoria 
+
+    movies.push(newMovie)
+
+    res.status(201)
 })
 
 const PORT = process.env.PORT ?? 1234
