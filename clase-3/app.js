@@ -1,8 +1,10 @@
-const esxpress = require('express')
+const express = require('express')
 const crypto = require('node:crypto')
 const movies = require('./movies.json')
+const { validateMovie } = require('./movies')
+const { error } = require('node:console')
 
-const app = esxpress()
+const app = express()
 app.use(express.json())
 app.disable('x-powered-by')
 
@@ -31,26 +33,16 @@ app.get('/movies/:id', (req, res) => {
 })
 
 app.post('/movies', (req, res) => {
-    const {
-    title,
-    genre,
-    year,
-    director,
-    duration,
-    rate,
-    poster,
-    } = req.body
+
+    const result = validateMovie(req.body)
+
+    if (result.error) {
+        return res.status(404).json({ error: result.error.message})
+    }
 
     const newMovie = {
-
         id: crypto.randomUUID(), // uuid v4
-        title,
-        genre,
-        year,
-        director,
-        duration,
-        rate: rate ?? 0,
-        poster,
+        ...result.data, // data
     }
 
     //esto no es REST, porque estamos guardadrdo
@@ -58,7 +50,7 @@ app.post('/movies', (req, res) => {
 
     movies.push(newMovie)
 
-    res.status(201)
+    res.status(201).json(newMovie)
 })
 
 const PORT = process.env.PORT ?? 1234
