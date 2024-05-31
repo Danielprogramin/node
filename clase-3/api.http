@@ -10,7 +10,6 @@ GET http://localhost:1234/movies?genre=action
 ### create a new movie
 
 POST http://localhost:1234/movies
-
 Content-Type: application/json
 
 {
@@ -23,4 +22,12 @@ Content-Type: application/json
     "Crime",
     "Drama"
   ]
+}
+
+### actualziar una pelicula
+PATCH http://localhost:1234/movies/dcdd0fad-a94c-4810-8acc-5f108d3b18c3
+Content-Type: application/json
+
+{
+  "year": 1998
 }
