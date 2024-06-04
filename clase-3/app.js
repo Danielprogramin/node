@@ -1,20 +1,30 @@
 const express = require('express')
 const crypto = require('node:crypto')
 const movies = require('./movies.json')
-const { validateMovie } = require('./schemas/movies')
-const { error } = require('node:console')
+const { validateMovie, validatePartialMovie } = require('./schemas/movies')
+
 
 const app = express()
 app.use(express.json())
 app.disable('x-powered-by')
 
+const ACCEPTED_ORIGINS = [
+    'http://localhost:8080',
+    'http://localhost:1234',
+    'https://movies.com',
+    'https://Daniel.dev'
+]
 
 app.get('/', (req, res) => {
     res.json({ message: 'Hello'})
 })
 
 app.get('/movies', (req, res) => {
-    res.header('Access-Control-Allow-Origin', '*')
+    const origin = req.header('origin')
+    if (ACCEPTED_ORIGINS.includes(origin) || !origin){
+        res.header('Access-Control-Allow-Origin', origin)
+    }
+
 
 
     const { genre} = req.query
@@ -57,6 +67,23 @@ app.post('/movies', (req, res) => {
     res.status(201).json(newMovie)
 })
 
+app.delete('/movies/:id', (req, res) => {
+    const origin = req.header('origin')
+    if (ACCEPTED_ORIGINS.includes(origin) || !origin){
+        res.header('Access-Control-Allow-Origin', origin)
+    }
+    const { id } = req.params
+    const movieIndex = movies.findIndex(movie => movie.id === id)
+
+    if (movieIndex === -1) {
+        return res.status(404).json({ message: 'Movie not found'})
+    }
+
+    movies.splice(movieIndex, 1)
+
+    return res.json({ message: 'Movie deleted'})
+})
+
 app.patch('/movies/:id', (req, res) => {
 
     const result = validatePartialMovie(req.body)
@@ -80,6 +107,18 @@ app.patch('/movies/:id', (req, res) => {
     movies[movieIndex] = updateMovie
 
     return res.json(updateMovie)
+})
+
+app.options('/movies/:id', (req, res) => {
+    const origin = req.header('origin')
+    if (ACCEPTED_ORIGINS.includes(origin) || !origin){
+        res.header('Access-Control-Allow-Origin', origin)
+    }
+
+    res.header('Access-Control-Allow-Methods', 'GET, POST, DELETE, PATCH, OPTIONS')
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+    res.header('Access-Control-Max-Age', '86400')
+    res.status(204).send()
 })
 
 
