@@ -22,16 +22,16 @@ const movieSchema = z.object({
     )
 })
 
-function validateMovie (object){
-    return movieSchema.safeParse(object)
+function validateMovie (input){
+    return movieSchema.safeParse(input)
 }
 
-function validatePatialMovie (object){
-    return movieSchema.partial().safeParse(object)
+function validatePartialMovie (input){
+    return movieSchema.partial().safeParse(input)
 }
 
 
 module.exports = {
     validateMovie,
-    validatePatialMovie
+    validatePartialMovie
 }

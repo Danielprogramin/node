@@ -1,7 +1,7 @@
 const express = require('express')
 const crypto = require('node:crypto')
 const movies = require('./movies.json')
-const { validateMovie } = require('./movies')
+const { validateMovie } = require('./schemas/movies')
 const { error } = require('node:console')
 
 const app = express()
@@ -14,6 +14,9 @@ app.get('/', (req, res) => {
 })
 
 app.get('/movies', (req, res) => {
+    res.header('Access-Control-Allow-Origin', '*')
+
+
     const { genre} = req.query
     if (genre){
         const filtereMovies = movies.filter(
