@@ -1,9 +1,15 @@
 import express, { json } from 'express'
 import { randomUUID } from 'node:crypto'
 
+import { validateMovie, validatePartialMovie } from './schemas/movies.js'
 
-import movies from './movies.json'
-import { validateMovie, validatePartialMovie } from './schemas/movies'
+//como leer un json en ESModules 
+//import fs from 'node:fs'
+// const movies = JSON.parse(fs.readFileSync('./movies.json', 'utf-8'))
+
+// como leer json en ESModules recomendado por ahora
+const movies = readJSON('./movies.json')
+
 
 const app = express()
 app.use(json())
